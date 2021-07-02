@@ -7,10 +7,13 @@ public class FinerJavaClass extends FinerJavaModule {
 
   private static final String CLASS_EXTENSION = ".cjava";
   private static final String CLASS_DELIMITER = "$";
+  
+  private String packageName;
 
-  public FinerJavaClass(final String name, final FinerJavaModule outerModule,
+  public FinerJavaClass(final String name, final String packageName, final FinerJavaModule outerModule,
       final FinerGitConfig config) {
     super(name, outerModule, config);
+    this.packageName = packageName;
   }
 
   @Override
@@ -49,7 +52,11 @@ public class FinerJavaClass extends FinerJavaModule {
       builder.append(this.outerModule.getBaseName())
           .append(CLASS_DELIMITER);
     }
-
+    
+    if( null != packageName && "".equals(packageName) == false ) {
+    	builder.append(packageName);
+    	builder.append(".");
+    }
     builder.append(this.name);
     return builder.toString();
   }

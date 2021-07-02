@@ -304,6 +304,9 @@ public class JavaFileVisitor extends ASTVisitor {
   private final List<FinerJavaModule> moduleList;
   private final Stack<Class<?>> contexts;
   private int classNestLevel;
+  
+  // ye marked
+  private String packageName;
 
   public JavaFileVisitor(final Path path, final FinerGitConfig config) {
 
@@ -331,7 +334,7 @@ public class JavaFileVisitor extends ASTVisitor {
 
   @Override
   public boolean visit(final AnnotationTypeDeclaration node) {
-
+	// TODO: ye marked AnnotationTypeDeclarationへの処理は必要なのかちょっと分からない
     this.classNestLevel++;
 
     final Javadoc javadoc = node.getJavadoc();
@@ -877,7 +880,7 @@ public class JavaFileVisitor extends ASTVisitor {
       final FinerJavaModule outerModule = this.moduleStack.peek();
       final String className = node.getName()
           .getIdentifier();
-      final FinerJavaClass classModule = new FinerJavaClass(className, outerModule, this.config);
+      final FinerJavaClass classModule = new FinerJavaClass(className, packageName, outerModule, this.config);
       this.moduleStack.push(classModule);
       this.moduleList.add(classModule);
     }
@@ -1450,6 +1453,7 @@ public class JavaFileVisitor extends ASTVisitor {
         methodFileName.append("_");
       }
     }
+    
     final String methodName = node.getName()
         .getIdentifier();
     methodFileName.append(methodName);
@@ -1459,6 +1463,9 @@ public class JavaFileVisitor extends ASTVisitor {
       final SingleVariableDeclaration svd = (SingleVariableDeclaration) parameter;
       final StringBuilder typeText = new StringBuilder();
       typeText.append(svd.getType());
+      // ye marked
+      typeText.append("_");
+      typeText.append(svd.getName());
       // "int a[]"のような表記に対応するため
       typeText.append("[]".repeat(Math.max(0, svd.getExtraDimensions())));
       if (svd.isVarargs()) {
@@ -1478,6 +1485,7 @@ public class JavaFileVisitor extends ASTVisitor {
     if (1 == this.classNestLevel) {
       final FinerJavaModule dummyMethod = this.moduleStack.pop();
       final FinerJavaModule outerModule = this.moduleStack.peek();
+      
       final FinerJavaMethod javaMethod =
           new FinerJavaMethod(methodFileName.toString(), outerModule, this.config);
       this.moduleStack.push(javaMethod);
@@ -1638,7 +1646,8 @@ public class JavaFileVisitor extends ASTVisitor {
 
   @Override
   public boolean visit(final PackageDeclaration node) {
-
+	// ye marked
+	packageName = node.getName().toString();
     this.addToPeekModule(new PACKAGE());
 
     this.contexts.push(PACKAGENAME.class);
@@ -2106,9 +2115,10 @@ public class JavaFileVisitor extends ASTVisitor {
     // インナークラスでない場合は，新しいクラスモジュールを作り，モジュールスタックにpush
     if (0 == this.classNestLevel) {
       final FinerJavaModule outerModule = this.moduleStack.peek();
-      final String className = node.getName()
+      String className = node.getName()
           .getIdentifier();
-      final FinerJavaClass classModule = new FinerJavaClass(className, outerModule, this.config);
+      // ye marked
+      final FinerJavaClass classModule = new FinerJavaClass(className, packageName, outerModule, this.config);
       this.moduleStack.push(classModule);
       this.moduleList.add(classModule);
     }
