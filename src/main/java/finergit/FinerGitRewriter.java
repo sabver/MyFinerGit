@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import finergit.ast.FinerJavaFileBuilder;
 import finergit.ast.FinerJavaModule;
+import finergit.util.PathMap;
 import finergit.util.RevCommitUtil;
 import jp.ac.titech.c.se.stein.core.Context;
 import jp.ac.titech.c.se.stein.core.EntrySet;
@@ -56,6 +57,11 @@ public class FinerGitRewriter extends RepositoryRewriter {
           String.join(System.lineSeparator(), m.getLines()) + System.lineSeparator();
       final ObjectId newId = target.writeBlob(finerSource.getBytes(StandardCharsets.UTF_8), c);
       final String name = m.getFileName();
+      // ye marked
+      final String originName = m.getOriginFileName();
+      if( name.equals(originName) == false ) {
+    	  PathMap.map.put(name, m.getOriginFileName());
+      }
       log.debug("Generate finer module: {} -> {} {} {}", entry, name, newId.name(), c);
       result.add(new Entry(entry.mode, name, newId, entry.directory));
     }

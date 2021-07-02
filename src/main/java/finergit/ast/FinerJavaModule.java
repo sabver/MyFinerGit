@@ -74,6 +74,11 @@ public abstract class FinerJavaModule {
     }
     return name;
   }
+  
+  // ye marked
+  public final String getOriginFileName() {
+	  return this.getBaseName() + this.getExtension();
+  }
 
   private String shrink(final String name) {
     final int maxFileNameLength = this.config.getMaxFileNameLength();

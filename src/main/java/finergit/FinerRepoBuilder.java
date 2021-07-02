@@ -7,8 +7,12 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import finergit.util.PathMap;
 import jp.ac.titech.c.se.stein.core.Context;
 
 /**
@@ -44,7 +48,12 @@ public class FinerRepoBuilder {
       log.debug("git reset --hard: {}", resetSucceeded ? "succeeded" : "failed");
       final boolean cleanSucceeded = repo.clean();
       log.debug("git clean -fd: {}", cleanSucceeded ? "succeeded" : "failed");
-
+      
+      // ye marked print PathMap
+      Set<String> keySet = PathMap.map.keySet();
+      for(String key: keySet) {
+    	 System.out.println(key + " -> " + PathMap.map.get(key)); 
+      }
     } catch (final Exception e) {
       e.printStackTrace();
     }
